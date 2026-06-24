@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Lista de Tareas</title>
+  <meta
+    name="description"
+    content="Aplicacion simple en HTML, CSS y JavaScript para organizar tareas diarias."
+  >
+  <style>
+    :root {
+      --bg: #f6efe6;
+      --card: rgba(255, 252, 247, 0.88);
+      --text: #1d1a17;
+      --muted: #6a625a;
+      --line: rgba(29, 26, 23, 0.08);
+      --accent: #c45c2f;
+      --accent-dark: #8f3f1f;
+      --done: #2f7a4f;
+      --shadow: 0 24px 60px rgba(83, 54, 34, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(196, 92, 47, 0.18), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(47, 122, 79, 0.18), transparent 30%),
+        linear-gradient(135deg, #f3e5d3, #f7f1ea 48%, #efe0cd);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: min(100%, 760px);
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 40px 32px 24px;
+      background:
+        linear-gradient(120deg, rgba(196, 92, 47, 0.16), rgba(255, 255, 255, 0.1)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.15));
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent-dark);
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin: 14px 0 0;
+      max-width: 55ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .content {
+      padding: 28px 32px 32px;
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      font: inherit;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(196, 92, 47, 0.45);
+      box-shadow: 0 0 0 4px rgba(196, 92, 47, 0.12);
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      padding: 0 20px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, opacity 0.16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff7f1;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .stats {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .ghost {
+      background: transparent;
+      color: var(--accent-dark);
+      border: 1px solid rgba(196, 92, 47, 0.25);
+      padding: 11px 16px;
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(29, 26, 23, 0.06);
+      border-radius: 18px;
+    }
+
+    .item.done .task-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .check {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--done);
+      cursor: pointer;
+    }
+
+    .task-text {
+      word-break: break-word;
+      font-size: 1rem;
+    }
+
+    .delete {
+      background: #f9ebe6;
+      color: var(--accent-dark);
+      padding: 10px 14px;
+    }
+
+    .empty {
+      margin: 0;
+      padding: 28px 18px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(29, 26, 23, 0.14);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.52);
+    }
+
+    .footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 620px) {
+      .hero,
+      .content {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .form {
+        grid-template-columns: 1fr;
+      }
+
+      .item {
+        grid-template-columns: auto 1fr;
+      }
+
+      .delete {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <p class="eyebrow">Aplicacion simple</p>
+      <h1>Mi Lista de Tareas</h1>
+      <p class="subtitle">
+        Una web hecha solo con HTML, CSS y JavaScript. Guarda tus tareas en el navegador
+        y esta lista sigue ahi cuando vuelves a abrir la pagina.
+      </p>
+    </section>
+
+    <section class="content">
+      <form class="form" id="task-form">
+        <input
+          id="task-input"
+          type="text"
+          placeholder="Escribe una tarea, por ejemplo: terminar la practica"
+          autocomplete="off"
+        >
+        <button class="primary" type="submit">Agregar</button>
+      </form>
+
+      <div class="toolbar">
+        <div class="stats" id="stats">0 tareas pendientes</div>
+        <button class="ghost" id="clear-done" type="button">Borrar completadas</button>
+      </div>
+
+      <ul class="list" id="task-list"></ul>
+      <p class="empty" id="empty-state">Todavia no hay tareas. Empieza por la primera.</p>
+
+      <p class="footer">
+        Esta pagina esta lista para publicarse gratis en GitHub Pages, Netlify o Cloudflare Pages.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = "mi-lista-de-tareas";
+    const form = document.getElementById("task-form");
+    const input = document.getElementById("task-input");
+    const list = document.getElementById("task-list");
+    const stats = document.getElementById("stats");
+    const emptyState = document.getElementById("empty-state");
+    const clearDoneButton = document.getElementById("clear-done");
+
+    let tasks = loadTasks();
+
+    function loadTasks() {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : [];
+    }
+
+    function saveTasks() {
+      localStorage.setItem(storageKey, JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      list.innerHTML = "";
+
+      if (tasks.length === 0) {
+        emptyState.hidden = false;
+      } else {
+        emptyState.hidden = true;
+      }
+
+      tasks.forEach((task) => {
+        const item = document.createElement("li");
+        item.className = `item${task.done ? " done" : ""}`;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "check";
+        checkbox.checked = task.done;
+        checkbox.setAttribute("aria-label", `Marcar tarea: ${task.text}`);
+        checkbox.addEventListener("change", () => toggleTask(task.id));
+
+        const text = document.createElement("span");
+        text.className = "task-text";
+        text.textContent = task.text;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete";
+        deleteButton.type = "button";
+        deleteButton.textContent = "Eliminar";
+        deleteButton.addEventListener("click", () => deleteTask(task.id));
+
+        item.append(checkbox, text, deleteButton);
+        list.appendChild(item);
+      });
+
+      const pending = tasks.filter((task) => !task.done).length;
+      stats.textContent = pending === 1 ? "1 tarea pendiente" : `${pending} tareas pendientes`;
+    }
+
+    function addTask(text) {
+      tasks.unshift({
+        id: crypto.randomUUID(),
+        text,
+        done: false
+      });
+      saveTasks();
+      renderTasks();
+    }
+
+    function toggleTask(id) {
+      tasks = tasks.map((task) =>
+        task.id === id ? { ...task, done: !task.done } : task
+      );
+      saveTasks();
+      renderTasks();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter((task) => task.id !== id);
+      saveTasks();
+      renderTasks();
+    }
+
+    function clearDoneTasks() {
+      tasks = tasks.filter((task) => !task.done);
+      saveTasks();
+      renderTasks();
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = input.value.trim();
+
+      if (!text) {
+        input.focus();
+        return;
+      }
+
+      addTask(text);
+      form.reset();
+      input.focus();
+    });
+
+    clearDoneButton.addEventListener("click", clearDoneTasks);
+
+    renderTasks();
+  </script>
+</body>
+</html>
